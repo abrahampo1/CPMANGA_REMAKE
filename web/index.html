@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPManga</title>
+</head>
+<body onload="ipcRenderer.send('load')">
+        <input type="text" id="user">
+        <input type="password" id="password">
+        <button type="submit" onclick="login()">LOG IN</button>
+        <br>
+    <input type="text" id="manga_query" placeholder="manga">
+    <button onclick="search_manga()">Search Manga</button>
+    <br>
+    <div id="kindle"></div>
+    <br>
+    <div id="mangas">
+
+    </div>
+    <hr>
+    Kindle Chapters Title
+    <select name="" id="manga_alt_title">
+
+    </select>
+    <br>
+    Manga Language
+    <select name="" id="manga_langs">
+
+    </select>
+    <br>
+    <button onclick="get_chapters()">GetChapters</button>
+    <br>
+    <div id="manga_chapters">
+
+    </div>
+</body>
+</html>
+
+<script>
+    const { ipcRenderer } = require('electron');
+
+    function  select_manga(manga){
+
+    }
+
+    ipcRenderer.on('kindle', (sender, kindle_path)=>{
+        document.getElementById('kindle').innerHTML = `Kindle is on ${kindle_path}`
+        if(!kindle_path){
+            document.getElementById('kindle').innerHTML = ''
+        }
+    })
+
+    ipcRenderer.on('login', function(sender, logged){
+        alert(logged)
+    })
+
+    function login(){
+        let user = document.getElementById('user').value
+        let password = document.getElementById('password').value
+
+        ipcRenderer.send('login', {user, password})
+    }
+
+    function search_manga(){
+        let manga = document.getElementById('manga_query').value
+
+        ipcRenderer.send('search_manga', manga)
+    }
+
+    ipcRenderer.on('manga_query', function(sender, mangas){
+        console.log(mangas)
+        document.getElementById('mangas').innerHTML = ''
+        let key = 0
+        mangas.forEach( manga => {
+            document.getElementById('mangas').innerHTML += `<a href="#" onclick="select_manga(${key})">${manga.localizedTitle.en}</a><br>`
+            key++;
+        });
+    })
+
+    ipcRenderer.on('manga_data', function(sender, manga){
+        manga = JSON.parse(manga)
+        console.log(manga)
+        document.getElementById('manga_alt_title').innerHTML = ''
+        manga.localizedAltTitles.forEach(title => {
+            console.log(title)
+            Object.values(title).forEach((alt) => {
+                if(typeof alt === 'string'){
+                    document.getElementById('manga_alt_title').innerHTML += `<option value="${alt}">${alt}</option>`
+                }
+            });
+        });
+        document.getElementById('manga_langs').innerHTML = ''
+        manga.availableTranslatedLanguages.forEach(language => {
+            document.getElementById('manga_langs').innerHTML += `<option value="${language}">${language}</option>`
+        });
+    })
+
+    function select_manga(manga_id){
+        ipcRenderer.send('get_manga', manga_id)
+    }
+
+    function get_chapters() {
+        let language = document.getElementById('manga_langs').value;
+        ipcRenderer.send('get_chapters', {language})
+     }
+
+    ipcRenderer.on('manga_chapters', function(sender, chapters){
+        chapters = JSON.parse(chapters)
+        document.getElementById('manga_chapters').innerHTML = ''
+        console.log(chapters)
+        let key = 0;
+        chapters.forEach(chapter => {
+            document.getElementById('manga_chapters').innerHTML += `<a href="#" onclick="download_chapter(${key})">${chapter.title}</a><br>`
+            key++;
+        });
+    })
+
+    function download_chapter(chapter) {
+        let alt = document.getElementById('manga_alt_title').value
+        ipcRenderer.send('download_chapter', {chapter, alt})
+    }
+    ipcRenderer.on('download_chapter_started', ()=>{
+        alert('Download started successfully')
+    })
+    ipcRenderer.on('downloaded_chapter', (sender, data)=>{
+        alert('download completed successfully')
+    })
+
+    ipcRenderer.on('alert', (sender, data)=>{
+        alert(data)
+    })
+</script>
