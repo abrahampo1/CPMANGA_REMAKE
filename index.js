@@ -168,7 +168,7 @@ ipcMain.on('get_manga', async (sender, data) => {
 
 ipcMain.on('get_chapters', async (sender, data) => {
   let chapter = await selecter_manga.getFeed(
-    { translatedLanguage: [data.language], order: { chapter: 'asc' } },
+    { translatedLanguage: [data.language], order: { chapter: 'asc' }, limit: 99999 },
     true,
   )
   chapters = chapter
