@@ -1,0 +1,74 @@
+:root{
+    --navbar: rgb(0, 0, 0);
+}
+
+body,html{
+    margin: 0;
+}
+
+*{
+    font-family: 'Poppins', sans-serif;
+}
+
+nav{
+    
+    user-select: none;
+    padding: 5px;
+    background-color: var(--navbar);
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+nav .icons{
+    color: whitesmoke;
+    position: absolute;
+    right: 10px;
+}
+
+nav .icons span{
+    cursor: pointer;
+}
+#search{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+}
+
+
+#app{
+    padding: 8px;
+}
+
+.search-input{
+    font-size: 30px;
+    padding: 5px;
+    width: 80%;
+}
+
+#mangas{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#mangas a{
+    text-decoration: none;
+    width: 33.3%;
+    text-align: center;
+    color: black;
+}
+
+#mangas a p{
+    padding: 10px;
+    font-size: 30px;
+}
+
+#mangas a img{
+    border-radius: 5px;
+}

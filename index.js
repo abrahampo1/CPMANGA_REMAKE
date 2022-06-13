@@ -145,7 +145,7 @@ ipcMain.on('login', function (e, data) {
   let pass = data.password
   MFA.login(user, pass, './bin/.md_cache')
     .then(function () {
-      win.send('login', 'User logged in successfully')
+      win.send('login', true)
     })
     .catch((err) => {
       win.send('login', err)
@@ -156,19 +156,37 @@ var selecter_manga
 ipcMain.on('search_manga', async (sender, data) => {
   console.log('searching ' + data)
   let manga = await MFA.Manga.search(data)
-  win.send('manga_query', manga)
+  let key = 0
+  let filled = 0;
+  manga.forEach((element) => {
+    let k = key
+    element.mainCover.resolve().then((r) => {
+      manga[k].cover = r
+      filled++
+      if (filled >= manga.length) {
+        win.send('manga_query', JSON.stringify(manga))
+      }
+    })
+    key++
+  })
+
   mangas = manga
 })
 var chapters
 ipcMain.on('get_manga', async (sender, data) => {
   console.log('searching ' + data)
   selecter_manga = mangas[data]
+  selecter_manga.covers = await selecter_manga.getCovers()
   win.send('manga_data', JSON.stringify(selecter_manga))
 })
 
 ipcMain.on('get_chapters', async (sender, data) => {
   let chapter = await selecter_manga.getFeed(
-    { translatedLanguage: [data.language], order: { chapter: 'asc' }, limit: 99999 },
+    {
+      translatedLanguage: [data.language],
+      order: { chapter: 'asc' },
+      limit: 99999,
+    },
     true,
   )
   chapters = chapter

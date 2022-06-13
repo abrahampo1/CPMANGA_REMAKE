@@ -1,146 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    />
     <title>CPManga</title>
-</head>
-<body onload="ipcRenderer.send('load')">
-        <input type="text" id="user">
-        <input type="password" id="password">
-        <button type="submit" onclick="login()">LOG IN</button>
-        <br>
-    <input type="text" id="manga_query" placeholder="manga">
-    <button onclick="search_manga()">Search Manga</button>
-    <br>
-    <div id="kindle"></div>
-    <br>
-    <div id="mangas">
-
+  </head>
+  <body onload="ipcRenderer.send('load'); load('home')">
+    <nav>
+      <img src="img/vertical_logo.png" onclick="load('home')" height="30px" alt="" />
+      <div class="icons">
+        <span class="material-symbols-outlined" id="loggedin">
+            person_off
+            </span>
+        <span class="material-symbols-outlined" id="kindle">
+            usb_off
+        </span>
+        <span class="material-symbols-outlined" onclick="search()">
+          search
+        </span>
+      </div>
+    </nav>
+    <div id="app"></div>
+    <div id="search">
+        <input class="search-input" type="text" placeholder="Manga..." onchange="search_manga(this.value)">
     </div>
-    <hr>
-    Kindle Chapters Title
-    <select name="" id="manga_alt_title">
-
-    </select>
-    <br>
-    Manga Language
-    <select name="" id="manga_langs">
-
-    </select>
-    <br>
-    <button onclick="get_chapters()">GetChapters</button>
-    <br>
-    <div id="manga_chapters">
-
-    </div>
-</body>
+  </body>
 </html>
-
-<script>
-    const { ipcRenderer } = require('electron');
-
-    function  select_manga(manga){
-
-    }
-
-    ipcRenderer.on('kindle', (sender, kindle_path)=>{
-        document.getElementById('kindle').innerHTML = `Kindle is on ${kindle_path}`
-        if(!kindle_path){
-            document.getElementById('kindle').innerHTML = ''
-        }
-    })
-
-    ipcRenderer.on('login', function(sender, logged){
-        alert(logged)
-    })
-
-    function login(){
-        let user = document.getElementById('user').value
-        let password = document.getElementById('password').value
-
-        ipcRenderer.send('login', {user, password})
-    }
-
-    function search_manga(){
-        let manga = document.getElementById('manga_query').value
-
-        ipcRenderer.send('search_manga', manga)
-    }
-
-    ipcRenderer.on('manga_query', function(sender, mangas){
-        console.log(mangas)
-        document.getElementById('mangas').innerHTML = ''
-        document.getElementById('manga_chapters').innerHTML = ''
-        document.getElementById('manga_alt_title').innerHTML = ''
-        document.getElementById('manga_langs').innerHTML = ''
-        let key = 0
-        mangas.forEach( manga => {
-            document.getElementById('mangas').innerHTML += `<a href="#" onclick="select_manga(${key})">${manga.localizedTitle.en}</a><br>`
-            key++;
-        });
-    })
-
-    ipcRenderer.on('manga_data', function(sender, manga){
-        manga = JSON.parse(manga)
-        console.log(manga)
-        document.getElementById('manga_alt_title').innerHTML = ``
-        Object.values(manga.localizedTitle).forEach(title => {
-            console.log(title)
-            if(typeof title === 'string'){
-                    document.getElementById('manga_alt_title').innerHTML += `<option value="${title}">${title}</option>`
-                }
-        });
-        manga.localizedAltTitles.forEach(title => {
-            console.log(title)
-            Object.values(title).forEach((alt) => {
-                if(typeof alt === 'string'){
-                    document.getElementById('manga_alt_title').innerHTML += `<option value="${alt}">${alt}</option>`
-                }
-            });
-        });
-        document.getElementById('manga_langs').innerHTML = ''
-        manga.availableTranslatedLanguages.forEach(language => {
-            document.getElementById('manga_langs').innerHTML += `<option value="${language}">${language}</option>`
-        });
-    })
-
-    function select_manga(manga_id){
-        ipcRenderer.send('get_manga', manga_id)
-        document.getElementById('manga_chapters').innerHTML = ''
-        document.getElementById('manga_alt_title').innerHTML = ''
-        document.getElementById('manga_langs').innerHTML = ''
-    }
-
-    function get_chapters() {
-        let language = document.getElementById('manga_langs').value;
-        ipcRenderer.send('get_chapters', {language})
-     }
-
-    ipcRenderer.on('manga_chapters', function(sender, chapters){
-        chapters = JSON.parse(chapters)
-        document.getElementById('manga_chapters').innerHTML = ''
-        console.log(chapters)
-        let key = 0;
-        chapters.forEach(chapter => {
-            document.getElementById('manga_chapters').innerHTML += `<a href="#" onclick="download_chapter(${key})">#${chapter.chapter} - ${chapter.title}</a><br>`
-            key++;
-        });
-    })
-
-    function download_chapter(chapter) {
-        let alt = document.getElementById('manga_alt_title').value
-        ipcRenderer.send('download_chapter', {chapter, alt})
-    }
-    ipcRenderer.on('download_chapter_started', ()=>{
-        alert('Download started successfully')
-    })
-    ipcRenderer.on('downloaded_chapter', (sender, data)=>{
-        alert('download completed successfully')
-    })
-
-    ipcRenderer.on('alert', (sender, data)=>{
-        alert(data)
-    })
-</script>
+<script src="js/renderer.js"></script>
+<script></script>
