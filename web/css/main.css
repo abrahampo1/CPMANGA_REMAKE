@@ -44,6 +44,12 @@ nav .icons span{
 
 #app{
     padding: 8px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 40px;
+    overflow-y: auto;
 }
 
 .search-input{
@@ -71,4 +77,64 @@ nav .icons span{
 
 #mangas a img{
     border-radius: 5px;
+}
+
+.w100{
+    width: 100%;
+}
+
+.center{
+    text-align: center;
+}
+
+.flex{
+    display: flex;
+}
+
+.flex.wrap{
+    flex-wrap: wrap;
+}
+
+.flex.center{
+    justify-content: center;
+}
+
+.manga-list{
+    padding: 5px;
+    padding-left: 20px;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+.manga-holder{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    border: 1px solid gray;
+    border-radius: 5px;
+    margin: 5px;
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+
+.manga-holder:hover{
+    background-color: rgb(191, 191, 191);
+}
+
+.manga-holder img{
+    height: 100px;
+    width: 80px;
+}
+
+input{
+    border: 1px solid gray;
+    padding: 10px;
+    box-sizing: border-box;
+    font-size: 20px;
+    border-radius: 5px;
+}
+
+input:focus{
+    outline: 1px solid black;
 }

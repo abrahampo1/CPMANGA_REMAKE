@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="css/main.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -15,28 +14,37 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
+    />
     <title>CPManga</title>
   </head>
   <body onload="ipcRenderer.send('load'); load('home')">
-    <nav>
-      <img src="img/vertical_logo.png" onclick="load('home')" height="30px" alt="" />
-      <div class="icons">
-        <span class="material-symbols-outlined" id="loggedin">
-            person_off
-            </span>
-        <span class="material-symbols-outlined" id="kindle">
-            usb_off
-        </span>
-        <span class="material-symbols-outlined" onclick="search()">
-          search
-        </span>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <div class="navbar-item title is-6">CPManga</div>
+      </div>
+      <div id="navbarBasicExample" class="navbar-menu is-active">
+        <div class="navbar-start">
+          <a class="navbar-item"> Home </a>
+
+          <a class="navbar-item" onclick="load('search')"> Search </a>
+        </div>
       </div>
     </nav>
+
     <div id="app"></div>
     <div id="search">
-        <input class="search-input" type="text" placeholder="Manga..." onchange="search_manga(this.value)">
+      <input
+        class="search-input"
+        type="text"
+        placeholder="Manga..."
+        onchange="search_manga(this.value)"
+      />
     </div>
   </body>
 </html>
 <script src="js/renderer.js"></script>
+<script src="js/mangadex.js"></script>
 <script></script>

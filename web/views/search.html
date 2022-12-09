@@ -1,0 +1,89 @@
+<div class="section">
+  <div class="field">
+    <div class="control is-medium">
+      <input
+        onchange="search(this)"
+        class="input is-medium"
+        type="text"
+        placeholder="Search..."
+      />
+    </div>
+  </div>
+
+  <div class="w100"></div>
+  <div id="manga"></div>
+</div>
+
+<script>
+  function search(input) {
+    $(input).addClass("is-loading");
+    let query = input.value;
+    $("#manga").html("");
+    MDEX.search(query).then((r) => {
+      $(input).removeClass("is-loading");
+      console.log(r);
+      $("#manga").append('<h1 class="title">Mangadex</h1>');
+      r.forEach(async (element) => {
+        let cover = await element.mainCover.resolve();
+
+        $("#manga").append(`
+
+        <article class="media is-clickable is-unselectable">
+    <figure class="media-left">
+      <p class="image is-64x64">
+        <img src="${cover.image256}">
+      </p>
+    </figure>
+    <div class="media-content">
+      <div class="content">
+        <p>
+          <strong>${element.localizedTitle.localString}</strong>
+          <br>
+          ${element.localizedDescription.localString}
+        </p>
+      </div>
+      <nav class="level is-mobile">
+        <div class="level-left">
+          <a class="level-item">
+            <span class="icon is-small"><i class="fas fa-reply"></i></span>
+          </a>
+          <a class="level-item">
+            <span class="icon is-small"><i class="fas fa-retweet"></i></span>
+          </a>
+          <a class="level-item">
+            <span class="icon is-small"><i class="fas fa-heart"></i></span>
+          </a>
+        </div>
+      </nav>
+    </div>
+  </article>
+
+        `);
+        // let div = document.createElement("div");
+        // div.classList.add("flex");
+        // div.classList.add("manga-holder");
+        // let image = document.createElement("img");
+        // let item = document.createElement("ul");
+        // item.classList.add("manga-list");
+        // item.appendChild(image);
+        // item.innerText = element.localizedTitle.localString;
+
+        // div.appendChild(image);
+        // div.appendChild(item);
+        // document.getElementById("manga").appendChild(div);
+
+        div.onclick = async function () {
+          let chapter = await element.getFeed(
+            {
+              translatedLanguage: ["en"],
+              order: { chapter: "asc" },
+              limit: 99999,
+            },
+            true
+          );
+          console.log(chapter);
+        };
+      });
+    });
+  }
+</script>
